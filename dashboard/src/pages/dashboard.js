@@ -71,7 +71,7 @@ export async function getServerSideProps() {
           return a.history.length;
         }).reduce((sum,val) => {
           return sum+val
-        });
+        }, 0);
 
         guilds.push({name: guildDoc.guildName, total: total});
       } else { continue };
