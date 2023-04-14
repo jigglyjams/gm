@@ -85,14 +85,20 @@ function numToEmoji (num) {
 
 discord.on('messageCreate', async m => {
   if (!m.author.bot) {
-    const botHasPermish = m.channel.permissionsFor(m.guild.me).has(
-      Permissions.FLAGS.READ_MESSAGE_HISTORY&&
-      Permissions.FLAGS.ADD_REACTIONS&&
-      Permissions.FLAGS.EMBED_LINKS);
-    const config = await getConfig(m.guild.id).then( (c) => { 
-      if (c == undefined) { return 0 }
-      else { return c }
-    });
+    let botHasPermish;
+    let config;
+    try {
+      botHasPermish = m.channel.permissionsFor(m.guild.me).has(
+        Permissions.FLAGS.READ_MESSAGE_HISTORY&&
+        Permissions.FLAGS.ADD_REACTIONS&&
+        Permissions.FLAGS.EMBED_LINKS);
+      config = await getConfig(m.guild.id).then( (c) => {
+        if (c == undefined) { return 0 }
+        else { log(c.guildName); return c }
+      });
+    } catch (e) {
+      log(e);
+    }
 
     const userId = m.author.id;
     const username = m.author.tag;
