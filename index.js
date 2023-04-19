@@ -91,7 +91,8 @@ discord.on('messageCreate', async m => {
       botHasPermish = m.channel.permissionsFor(m.guild.me).has(
         Permissions.FLAGS.READ_MESSAGE_HISTORY&&
         Permissions.FLAGS.ADD_REACTIONS&&
-        Permissions.FLAGS.EMBED_LINKS);
+        Permissions.FLAGS.EMBED_LINKS&&
+        Permissions.FLAGS.GUILD_MESSAGES);
       config = await getConfig(m.guild.id).then( (c) => {
         if (c == undefined) { return 0 }
         else { log(c.guildName); return c }
