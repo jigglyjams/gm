@@ -4,18 +4,15 @@ import {
   Link as ChakraLink,
   Heading,
   Container,
-  Spinner,
   Button
 } from '@chakra-ui/react'
 import {
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
-  TableCaption,
 } from '@chakra-ui/react'
 import { Main } from '../components/Main'
 import { DarkModeSwitch } from '../components/DarkModeSwitch'
