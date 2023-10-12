@@ -73,7 +73,7 @@ export async function getServerSideProps() {
           return sum+val
         }, 0);
 
-        guilds.push({name: guildDoc.guildName, total: total});
+        try { guilds.push({name: guildDoc.guildName, total: total}); } catch (e) { console.error('bad guild record') };
       } else { continue };
     }
     guilds.sort((a,b)=>{return b.total - a.total})
