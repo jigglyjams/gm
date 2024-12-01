@@ -73,6 +73,7 @@ async function handleUser (userId, username) {
 
 function numToEmoji (num) {
   var emoji = [];
+  // console.log(num)
   const numString = num.toString();
   const numArray = numString.split('');
   for (var i = 0; i < numArray.length; i++) {
@@ -90,8 +91,7 @@ discord.on('messageCreate', async m => {
     try {
       botHasPermish = m.channel.permissionsFor(m.guild.me).has(
         Permissions.FLAGS.READ_MESSAGE_HISTORY&&
-        Permissions.FLAGS.ADD_REACTIONS&&
-        Permissions.FLAGS.EMBED_LINKS);
+        Permissions.FLAGS.ADD_REACTIONS);
       config = await getConfig(m.guild.id).then( (c) => {
         if (c == undefined) { return 0 }
         else { log(c.guildName); return c }
@@ -112,7 +112,7 @@ discord.on('messageCreate', async m => {
             await insertGuild(m.guild.name, m.channel.name, m.channel.id, keyword);
             log(`New guild added! ${m.guild.name}, ${m.channel.name}, word: ${keyword}`, 'g');
             await discord.channels.cache.get(m.channelId).send(`Setup to track ${keyword} in ${m.channel.name}`);
-          } else { 
+          } else {
             await discord.channels.cache.get(m.channelId).send('Must be a bot wrangler to perform setup!');
           }
         } catch (e) {
@@ -127,17 +127,16 @@ discord.on('messageCreate', async m => {
             .setDescription(`thanks for adding me!\nmy purpose is to count your gm's\nsay gm once a day to increment your streak\nmiss a day and your streak gets reset :(\nwhen you have successfully gm'ed you'll see reaction emojis with your current streak\nif you haven't waited long enough since your last gm you'll see a ⏰ reaction`)
             .addField('other commands',"`!gm` responds with your current streak and running total\n`!gm wen` responds with wen you last said it and wen to say it next\n`!gm rank` displays the current streak leader board\n`!gm setup` setups me up to track in the channel where it is sent\n")
             .addField('===========================','gm')
-            .addField('brought to you by', '[CanuDAO](https://discord.gg/dv7SXUaMKD)');
-          try { 
+          try {
             await discord.channels.cache.get(m.channelId).send({embeds:[message]});
           } catch(e) { return }
         } else {
           log(`Missing permissions in ${m.guild.name}, ${m.channel.name}`);
-          try { 
+          try {
             await discord.channels.cache.get(m.channelId).send("Missing permissions to send help message");
           } catch(e) { return }
         }
-      
+
       } else if (config !== 0) {
           if (m.content.toLowerCase() === config.keyword && config.channelId === m.channel.id) {
             const streak = await handleUser(userId, username);
@@ -151,7 +150,7 @@ discord.on('messageCreate', async m => {
                 } catch(e) { return }
               }
             } else {
-              const streakmoji = numToEmoji(streak); 
+              const streakmoji = numToEmoji(streak);
               for (var i = 0; i < streakmoji.length; i++){
                 if (botHasPermish){
                   try { m.react(streakmoji[i]); } catch(e) { log(`ERROR: nummoji reaction ${m.guild.name}, ${m.channel.name}\n\t\t\t\t${e}`, 'e')}
@@ -170,10 +169,10 @@ discord.on('messageCreate', async m => {
             if (check === -1) zeroUserStreak(userId);
             const user = await getUser(userId).then( (u) => {
               if (u === null) { return 0 }
-              else { return u; } 
+              else { return u; }
             });
             if (user === 0) {
-              try { 
+              try {
                 await discord.channels.cache.get(m.channelId).send(`gm ${m.author}, you've never said gm, give it a try!`);
               } catch(e) { return }
             } else {
@@ -183,7 +182,7 @@ discord.on('messageCreate', async m => {
             }
 
           } else if (m.content === '!gm avg') {
-            const avg = await getUser(userId).then( (t) => { 
+            const avg = await getUser(userId).then( (t) => {
               const history = t.history;
               const length = history.length;
               let ret = 0;
@@ -205,7 +204,7 @@ discord.on('messageCreate', async m => {
               (rank[2] == undefined || rank[2].streak === 0) ? rank[2] = ({'username': 'no one', 'streak': 'NA'}) : null;
               (rank[3] == undefined || rank[3].streak === 0) ? rank[3] = ({'username': 'no one', 'streak': 'NA'}) : null;
               (rank[4] == undefined || rank[4].streak === 0) ? rank[4] = ({'username': 'no one', 'streak': 'NA'}) : null;
-              try { 
+              try {
                 await discord.channels.cache.get(m.channelId).send(
                 `🥇 ${rank[0].username} -> ${rank[0].streak}\n🥈 ${rank[1].username} -> ${rank[1].streak}\n🥉 ${rank[2].username} -> ${rank[2].streak}\n4️⃣ ${rank[3].username} -> ${rank[3].streak}\n5️⃣ ${rank[4].username} -> ${rank[4].streak}`);
               } catch(e) { return }
@@ -218,7 +217,7 @@ discord.on('messageCreate', async m => {
             try {
               await discord.channels.cache.get(m.channelId).send(`You previously said ${config.keyword} at <t:${formerTime.unix()}>. Say it again after <t:${lower.unix()}> but before <t:${upper.unix()}>`);
             } catch(e) { return }
-          
+
           } else if (m.content === '!gm rank total') {
             const rank = await getTotalRank();
             (rank[0] == undefined || rank[0].historyCount === 0) ? rank[0] = ({'username': 'no one', 'streak': 'NA'}) : null;
@@ -226,7 +225,7 @@ discord.on('messageCreate', async m => {
             (rank[2] == undefined || rank[2].historyCount === 0) ? rank[2] = ({'username': 'no one', 'streak': 'NA'}) : null;
             (rank[3] == undefined || rank[3].historyCount === 0) ? rank[3] = ({'username': 'no one', 'streak': 'NA'}) : null;
             (rank[4] == undefined || rank[4].historyCount === 0) ? rank[4] = ({'username': 'no one', 'streak': 'NA'}) : null;
-            try { 
+            try {
               await discord.channels.cache.get(m.channelId).send(
               `**All time ranking**:\n🥇 ${rank[0].username} -> ${rank[0].historyCount}\n🥈 ${rank[1].username} -> ${rank[1].historyCount}\n🥉 ${rank[2].username} -> ${rank[2].historyCount}\n4️⃣ ${rank[3].username} -> ${rank[3].historyCount}\n5️⃣ ${rank[4].username} -> ${rank[4].historyCount}`);
             } catch(e) { return }
@@ -251,8 +250,8 @@ discord.once('ready', async c => {
 
 discord.login(keys.DISCORD_KEY);
 await mongoConnect().then( (r) => {
-  if (r === 1) { 
-    log('MongoDB connected'); 
+  if (r === 1) {
+    log('MongoDB connected');
     return;
   } else {
     log('Error connecting.');
